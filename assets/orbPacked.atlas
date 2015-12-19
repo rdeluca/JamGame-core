@@ -11,30 +11,9 @@ repeat: none
   orig: 100, 100
   offset: 0, 0
   index: -1
-00017
+0017
   rotate: false
   xy: 2, 104
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-00014
-  rotate: false
-  xy: 614, 2
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-00015
-  rotate: false
-  xy: 716, 104
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-00016
-  rotate: false
-  xy: 716, 2
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -119,6 +98,27 @@ repeat: none
 0013
   rotate: false
   xy: 614, 104
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+0014
+  rotate: false
+  xy: 614, 2
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+0015
+  rotate: false
+  xy: 716, 104
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+0016
+  rotate: false
+  xy: 716, 2
   size: 100, 100
   orig: 100, 100
   offset: 0, 0

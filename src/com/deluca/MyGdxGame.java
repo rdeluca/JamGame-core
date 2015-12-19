@@ -1,5 +1,7 @@
 package com.deluca;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -11,18 +13,14 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
+import com.deluca.objects.AnimatedObject;
 
 
 public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 	  	private SpriteBatch batch;
 	    private TextureAtlas textureAtlas;
-	    private Sprite orbSprite;
-	    private int currentFrame = 1;
-	    private int numOrbFrames = 17;
-	    private String currentAtlasKey = new String("0001");
 	    private levelState state = levelState.startScreen;
-	    private boolean orbOrderDown = false;
-	    
+	    private ArrayList<AnimatedObject> objectList;
 	    public enum levelState {
 	    	startScreen, level0
 	    }
@@ -36,21 +34,13 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 	        
 	    	batch = new SpriteBatch();
 	        
-	        textureAtlas = new TextureAtlas(Gdx.files.internal("orbPacked.atlas"));
-	        AtlasRegion region = textureAtlas.findRegion("0001");
-	        orbSprite = new Sprite(region);
-
+	    	AnimatedObject orb = new AnimatedObject("orbPacked.atlas", 16 );
+	    	objectList.add(orb);
+	    	
 	        Timer.schedule(new Task(){
 	                @Override
 	                public void run() {
-	                	if(!orbOrderDown)	                	
-	                		currentFrame++;
-	                	else
-	                		currentFrame--;
-	                    if(currentFrame > numOrbFrames*3 || currentFrame==1)
-	                    	orbOrderDown=!orbOrderDown;
-	                    currentAtlasKey = String.format("%04d", currentFrame/3+1);
-	                    orbSprite.setRegion(textureAtlas.findRegion(currentAtlasKey));
+	                	
 	                }
 	            }
 	            ,0,1/30.0f);
@@ -63,29 +53,20 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 	    }
 
 	    @Override
-	    public void render() {        
+	    public void render() { 
+	    	
 	        Gdx.gl.glClearColor(0, 0, 0, 1);
 	        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 	        
 	        batch.begin();
-	        drawOrb();
+	        for(AnimatedObject animatedObject:objectList)
+	        {
+	        	animatedObject.step();
+	        	animatedObject.draw();
+	        }
 	        batch.end();
 	    }
 
-	    private void drawOrb()
-	    {
-	        if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)){
-	            x=Gdx.input.getX();
-
-	        }
-	        if(Gdx.input.isButtonPressed(Input.Buttons.RIGHT)){
-	        	y=Gdx.graphics.getHeight()-Gdx.input.getY();
-
-	        }
-	    	orbSprite.setCenter(x, y);
-	    	orbSprite.setScale((float) 0.4);
-	        orbSprite.draw(batch);
-	    }
 	    
 	    @Override
 	    public void resize(int width, int height) {
