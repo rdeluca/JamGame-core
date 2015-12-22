@@ -18,9 +18,8 @@ import com.deluca.objects.AnimatedObject;
 
 public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 	  	private SpriteBatch batch;
-	    private TextureAtlas textureAtlas;
 	    private levelState state = levelState.startScreen;
-	    private ArrayList<AnimatedObject> objectList;
+	    private ArrayList<AnimatedObject> objectList =  new ArrayList<AnimatedObject>();
 	    public enum levelState {
 	    	startScreen, level0
 	    }
@@ -35,6 +34,8 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 	    	batch = new SpriteBatch();
 	        
 	    	AnimatedObject orb = new AnimatedObject("orbPacked.atlas", 16 );
+	    	
+	    	
 	    	objectList.add(orb);
 	    	
 	        Timer.schedule(new Task(){
@@ -48,8 +49,10 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 
 	    @Override
 	    public void dispose() {
-	        batch.dispose();
-	        textureAtlas.dispose();
+	        
+	    	batch.dispose();
+	        for(AnimatedObject aObject: objectList)
+	        	aObject.textureAtlas.dispose();
 	    }
 
 	    @Override

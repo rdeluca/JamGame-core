@@ -13,15 +13,15 @@ public class AnimatedObject
 	int numFrames;
 	boolean reverse=false;
 	String currentAtlasKey="";
-	Sprite orbSprite;
-    TextureAtlas textureAtlas;
+	Sprite sprite;
+    public TextureAtlas textureAtlas;
 	
 	public AnimatedObject(String file, int totalFrames)
 	{
 		numFrames=totalFrames;
         textureAtlas = new TextureAtlas(Gdx.files.internal(file));
         AtlasRegion region = textureAtlas.findRegion("0001");
-        orbSprite = new Sprite(region);
+        sprite = new Sprite(region);
 	}
 	
 	
@@ -33,8 +33,11 @@ public class AnimatedObject
     		currentFrame--;
         if(currentFrame > numFrames*3 || currentFrame==1)
         	reverse=!reverse;
-        currentAtlasKey = String.format("%04d", currentFrame/3+1);
-        orbSprite.setRegion(textureAtlas.findRegion(currentAtlasKey));
+        if(currentFrame<17&&currentFrame>0)
+        	currentAtlasKey = String.format("%04d", currentFrame/3+1);
+        
+        
+        sprite.setRegion(textureAtlas.findRegion(currentAtlasKey));
 	}
 
 
