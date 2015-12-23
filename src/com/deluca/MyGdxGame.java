@@ -23,17 +23,13 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 	    public enum levelState {
 	    	startScreen, level0
 	    }
-	    
-	    
-	    int x= 0;
-	    int y= 0;
-	    
+
 	    @Override
 	    public void create() {        
 	        
 	    	batch = new SpriteBatch();
 	        
-	    	AnimatedObject orb = new AnimatedObject("orbPacked.atlas", 16 );
+	    	AnimatedObject orb = new AnimatedObject("orbPacked.atlas", 16, 3);
 	    	
 	    	
 	    	objectList.add(orb);
@@ -41,7 +37,11 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 	        Timer.schedule(new Task(){
 	                @Override
 	                public void run() {
-	                	
+	        	        for(AnimatedObject aObject: objectList){
+	        	        	aObject.step();
+	        	        }
+	        	        render();
+
 	                }
 	            }
 	            ,0,1/30.0f);
@@ -64,8 +64,7 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 	        batch.begin();
 	        for(AnimatedObject animatedObject:objectList)
 	        {
-	        	animatedObject.step();
-	        	animatedObject.draw();
+	        	animatedObject.draw(batch);
 	        }
 	        batch.end();
 	    }
