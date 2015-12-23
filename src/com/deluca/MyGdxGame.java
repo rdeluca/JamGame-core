@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 import com.deluca.objects.AnimatedObject;
+import com.deluca.objects.ThrowingOrb;
 
 
 public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
@@ -29,7 +30,7 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 	        
 	    	batch = new SpriteBatch();
 	        
-	    	AnimatedObject orb = new AnimatedObject("orbPacked.atlas", 16, 3);
+	    	AnimatedObject orb = new ThrowingOrb();
 	    	
 	    	
 	    	objectList.add(orb);
