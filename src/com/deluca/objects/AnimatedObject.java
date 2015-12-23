@@ -51,16 +51,15 @@ public abstract class AnimatedObject
     			currentFrame=0;
         	}
     	}
-    	
+		
         if(currentFrame==0)
     	{
         	currentFrame=1;
         	reverse=false;
         }
-
+        
 		currentAtlasKey = String.format("%04d", currentFrame/3+1);
 
-        
         sprite.setRegion(textureAtlas.findRegion(currentAtlasKey));
 	}
 
