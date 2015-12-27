@@ -8,25 +8,44 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 
 public class ThrowingOrb extends AnimatedObject
 {
+	float deltaX;
+	float deltaY;
+	final static float THROWSPEED=(float) .5;
+	final static float SCALE=(float) 0.4;
+	float debugTimer;
+	float width;
 	
-	public ThrowingOrb() {
-		super("orbPacked.atlas", 16, 3);
+	public ThrowingOrb() 
+	{
+		super("orbPacked.atlas", 16, 3,0,0, SCALE);
 		loopback=true;
+    	sprite.setScale((float) SCALE);
+    	
+    	width = sprite.getWidth()*SCALE;
+    	debugTimer=0;
 	}
 
 	@Override
-	public void draw(Batch batch) //TODO Take this out and put it in a orb file
+	public void draw(Batch batch)
 	{
-        if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)){
-            x=Gdx.input.getX();
 
+        if(Gdx.input.isButtonPressed(Input.Buttons.LEFT))
+        {
+            setX(Gdx.input.getX());
+            deltaX=(float) (Gdx.input.getDeltaX()*THROWSPEED);
+
+            setY(Gdx.graphics.getHeight()-Gdx.input.getY());
+            deltaY=(float) (-1*Gdx.input.getDeltaY()*THROWSPEED);
+
+           // sprite.setCenter(x, y);
         }
-        if(Gdx.input.isButtonPressed(Input.Buttons.RIGHT)){
-        	y=Gdx.graphics.getHeight()-Gdx.input.getY();
+        else
+        {
+        //	x=Gdx.input.
+       // 	y=y+deltaY;	
         }
         
-    	sprite.setCenter(x, y);
-    	sprite.setScale((float) 0.4);
+        sprite.setCenter(getX(), getY());
         sprite.draw(batch);
 	}
 }

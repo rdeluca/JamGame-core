@@ -4,13 +4,14 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 import com.deluca.objects.AnimatedObject;
@@ -21,15 +22,22 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 	  	private SpriteBatch batch;
 	    private levelState state = levelState.startScreen;
 	    private ArrayList<AnimatedObject> objectList =  new ArrayList<AnimatedObject>();
+        Sprite background;
+        	    
 	    public enum levelState {
-	    	startScreen, level0
+	    	startScreen, level01
 	    }
 
 	    @Override
 	    public void create() {        
-	        
+
+	    	FileHandle i = Gdx.files.internal("background.png");
+	    	background = new Sprite(new Texture(i));
 	    	batch = new SpriteBatch();
-	        
+	        int w = Gdx.graphics.getWidth();
+	    	int h = Gdx.graphics.getHeight();
+	    	Stage stage = new Stage();
+	    	
 	    	AnimatedObject orb = new ThrowingOrb();
 	    	
 	    	
@@ -63,6 +71,8 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 	        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 	        
 	        batch.begin();
+	        
+	        background.draw(batch);
 	        for(AnimatedObject animatedObject:objectList)
 	        {
 	        	animatedObject.draw(batch);
@@ -103,7 +113,7 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 
 		@Override
 		public boolean touchDown(int screenX, int screenY, int pointer,int button) {
-
+			// TODO Auto-generated method stub
 			return false;
 		}
 
@@ -129,5 +139,15 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 		public boolean scrolled(int amount) {
 			// TODO Auto-generated method stub
 			return false;
+		}
+		
+		public void changeDisplay(int width, int height, boolean fullscreen)
+		{
+			Gdx.graphics.setDisplayMode(width,height,fullscreen);
+		}
+		
+		public void changeCamera(int width, int height)
+		{
+			OrthographicCamera camera = new OrthographicCamera(width, height);
 		}
 }
