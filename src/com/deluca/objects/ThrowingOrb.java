@@ -3,49 +3,46 @@ package com.deluca.objects;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 
-
-
-public class ThrowingOrb extends AnimatedObject
-{
-	float deltaX;
-	float deltaY;
-	final static float THROWSPEED=(float) .5;
-	final static float SCALE=(float) 0.4;
+public class ThrowingOrb extends AnimatedObject {
+	final static float THROWSPEED = (float) .5;
+	final static float SCALE = (float) 0.4;
 	float debugTimer;
 	float width;
+
+	float deltaX=0f, deltaY=0f;
 	
-	public ThrowingOrb() 
-	{
-		super("orbPacked.atlas", 16, 3,0,0, SCALE);
-		loopback=true;
-    	sprite.setScale((float) SCALE);
-    	
-    	width = sprite.getWidth()*SCALE;
-    	debugTimer=0;
+	public ThrowingOrb() {
+		super("orbPacked.atlas", 16, 3, 0, 0, SCALE);
+		textureAtlas = new TextureAtlas(Gdx.files.internal("orbPacked.atlas"));
+
+        setBounds(0,0,textureAtlas.getTextures().first().getWidth(),textureAtlas.getTextures().first().getHeight());
+
+		loopback = true;
+		sprite.setScale((float) SCALE);
+		width = sprite.getWidth() * SCALE;
+		debugTimer = 0;
+		MoveToAction x = new MoveToAction();
+		x.setPosition(10, -10);
 	}
 
 	@Override
-	public void draw(Batch batch)
-	{
+	public void draw(Batch batch, float alpha) {
+		sprite.setCenter(getX(), getY());
+		sprite.draw(batch);
+	}
 
-        if(Gdx.input.isButtonPressed(Input.Buttons.LEFT))
-        {
-            setX(Gdx.input.getX());
-            deltaX=(float) (Gdx.input.getDeltaX()*THROWSPEED);
+	@Override
+	public void act(float delta) {
 
-            setY(Gdx.graphics.getHeight()-Gdx.input.getY());
-            deltaY=(float) (-1*Gdx.input.getDeltaY()*THROWSPEED);
+		float newX= getX()+deltaX;
+		float newY=getY()+deltaY;
+		
+		setX(newX);
+		setY(newY);
 
-           // sprite.setCenter(x, y);
-        }
-        else
-        {
-        //	x=Gdx.input.
-       // 	y=y+deltaY;	
-        }
-        
-        sprite.setCenter(getX(), getY());
-        sprite.draw(batch);
+		super.act(delta);
 	}
 }
