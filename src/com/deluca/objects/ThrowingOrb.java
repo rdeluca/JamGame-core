@@ -42,7 +42,16 @@ public class ThrowingOrb extends AnimatedObject {
 		
 		setX(newX);
 		setY(newY);
-
 		super.act(delta);
+	}
+
+	public void setDeltaX(float movementX)
+	{
+		deltaX=movementX;
+	}
+
+	public void setDeltaY(float movementY)
+	{
+		deltaY=movementY;
 	}
 }
