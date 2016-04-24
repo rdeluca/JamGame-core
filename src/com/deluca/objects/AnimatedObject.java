@@ -31,13 +31,29 @@ public abstract class AnimatedObject extends Actor
         AtlasRegion region = textureAtlas.findRegion("0001");
         sprite = new Sprite(region);
         setX(startX);
-        setY(startY);
-
+        setY(startY);    	
+        sprite.setScale((float) scale);		
         sprite.setCenter(getX(), getY());
 	}
 	
-
-		
-		
 	
+	@Override
+	public float getX() {
+		return sprite.getX();
+	}
+
+	@Override
+	public float getY() {
+		return sprite.getY();
+	}
+
+	@Override
+	public void setX(float x) {
+		sprite.setX(x);
+	}
+
+	@Override
+	public void setY(float y) {
+		sprite.setY(y);
+	}	
 }

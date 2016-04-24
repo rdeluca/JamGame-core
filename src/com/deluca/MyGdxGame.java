@@ -34,8 +34,9 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
         Stage stage;
         Actor actor;
         ThrowingOrb orb;
-        FixedSizeQueue<Integer> xLocs = new FixedSizeQueue<Integer>(5);
-        FixedSizeQueue<Integer> yLocs = new FixedSizeQueue<Integer>(5);
+        private final int maxNumMouseDragSamples = 5;
+        FixedSizeQueue<Integer> xLocationSamples = new FixedSizeQueue<Integer>(maxNumMouseDragSamples);
+        FixedSizeQueue<Integer> yLocationSamples = new FixedSizeQueue<Integer>(maxNumMouseDragSamples);
         float clickX=0;
         float clickY=0;
         int numLocs=0;
@@ -109,7 +110,7 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 		
 		public void changeCamera(int width, int height)
 		{
-		//	OrthographicCamera camera = new OrthographicCamera(width, height);
+			//OrthographicCamera camera = new OrthographicCamera(width, height);
 		}
 
 
@@ -142,13 +143,13 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 		public boolean touchDown(int screenX, int screenY, int pointer, int button) 
 		{
 			orb.act(Gdx.graphics.getDeltaTime());
-			orb.setX(Gdx.input.getX());
-			orb.setY(Gdx.graphics.getHeight() - Gdx.input.getY());
-			orb.setDeltaX(0);
-			clickX = Gdx.input.getX();
-			xLocs.offer(Gdx.input.getX());
-			yLocs.offer(Gdx.input.getY());
-				
+			int mx=Gdx.input.getX();
+			int my=Gdx.input.getY();
+
+			orb.getOriginX();
+
+			centerOrbOnCursor();	
+			
 			return false;
 		}
 
@@ -156,92 +157,70 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 
 		@Override
 		public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-			
-//			avg();
-			
-			//Way3
-			float numVals=xLocs.size();
-			float avgXValue=0, avgYValue=0;
 
-			//
-			getAverage(xLocs);
-			getAverage(yLocs);
-			//\way3
-/*
-			float test= 0;
-			int numAvg=0;
-			float avgDelta=0;
-
-			if(xLocs[0]!=null && xLocs[1]!=null && xLocs[2]!=null)
-			{
-				//if(new Float(xLocs[0])>new Float(xLocs[2]))
-				{
-					//moveRight
-					//10   7
-					float deltaOne = new Float(xLocs[0])-new Float(xLocs[1]);
-					float deltaTwo = new Float(xLocs[1])-new Float(xLocs[2]);
-					avgDelta=(deltaOne+deltaTwo)/2;
-				}
-				//else
-				{
-					//moveleft
-					
-				}
-			}
-	WAYTWO
-	*/				
-/*			for(int i=0;i<xLocs.length;i++)
-			{
-				if(xLocs[i]!=null)
-				{
-					test+=new Float(xLocs[i]);
-					numAvg++;
-					System.out.println("Location#"+i+" "+xLocs[i]);
-				}
-			}			
-			test=test/numAvg;
-			System.out.println(avgDelta);
-			*
-			*  \wayone
-			*/
-			orb.setDeltaX(-avgValue);
+			orb.setDeltaX(getAverage(xLocationSamples));
+			//TODO: NOTE - NEGATIVE Y, y is opposite direction than x. Change getAvg?
+			orb.setDeltaY(-getAverage(yLocationSamples));
 			
-			return false;
+			return true;
 		}
 
 		
 
 
-		private void getAverage(FixedSizeQueue<Integer> queue) {
+		private float getAverage(FixedSizeQueue<Integer> queue) {
 			int numVals=queue.size();
 			float averageDistance=0;
 			float first=queue.poll();
-			for(int i=0; i<xLocs.size(); i++)
+			for(int i=0; i<queue.size(); i++)
 			{
 				float second = queue.poll();
-				averageDistance+=first-second;
+				averageDistance+=second-first;
 				first=second;
 			}
 			averageDistance=averageDistance/numVals;
-			
+			return averageDistance;
 		}
 
 		@Override
 		public boolean touchDragged(int screenX, int screenY, int pointer) {
 			
-			
-			float newX = Gdx.input.getX();
+			//GetX points to bottom-left of a sprite
 			orb.setX(Gdx.input.getX());
-			orb.setY(Gdx.graphics.getHeight() - Gdx.input.getY());
-
-			xLocs.offer(Gdx.input.getX());			
 			
-			// TODO Auto-generated method stub
-			return false;
+			//getY is the opposite for GDX.input as it is for sprites for some reason
+			//0 is bottom for sprites and top for mouse.
+			orb.setY(Gdx.graphics.getHeight() - Gdx.input.getY());
+			
+			centerOrbOnCursor();
+			
+			return true;
 		}
 
+		/**
+		 * Center orb on mouse 
+		 * Add location to sample list
+		 */
+		private void centerOrbOnCursor()
+		{
+			float msX=Gdx.input.getX();
+			float msY=Gdx.input.getY();
+	float X =Gdx.input.getX();
+	float Y = Gdx.graphics.getHeight() - Gdx.input.getY();
+	System.out.println("MOUSE:"+msX + " BALLX:" +X);
+	System.out.println("MOUSEY:"+msY + " BALLy:" +Y);
 
+	orb.setX(X);
+	orb.setY(Y);
+	orb.setDeltaX(0);
+	orb.setDeltaY(0);
 
+			//Give queue the new touched location
+			xLocationSamples.offer(Gdx.input.getX());		
+			yLocationSamples.offer(Gdx.input.getY());
+		}
+
+		
 		@Override
 		public boolean mouseMoved(int screenX, int screenY) {
 			
