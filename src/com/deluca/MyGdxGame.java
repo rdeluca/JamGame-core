@@ -49,6 +49,7 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
         float clickY=0;
         int numLocs=0;
         
+        boolean grabbed=false;
         boolean leftdown=false;
         
         
@@ -86,7 +87,7 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 	    	croc= new WalkCroc(40, 40);
 	    	
 	    	stage.addActor(orb);
-	    	stage.addActor(croc);
+	    //	stage.addActor(croc);
 	  //  	Gdx.input.setInputProcessor(stage);
 	    	stage.setKeyboardFocus(stage.getActors().first());
 	    
@@ -105,9 +106,31 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 	    	
 	    	//Clear screen
 	    	Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-	
+	    	float msX=Gdx.input.getX();
+			float msY=Gdx.input.getY();
+			Circle c = (Circle) orb.getShape();
+			
+			System.out.println("MOUSE:" + msX + " BALLX:" + c.x);
+			System.out.println("MOUSEY:" + (Gdx.graphics.getHeight()-msY) + " BALLy:" + c.y);
+			System.out.println(c.contains(msX, Gdx.graphics.getHeight()-msY));
+			
+	    	if(Gdx.input.isButtonPressed(Input.Buttons.LEFT))
+	    	{
+	    		
+				
+				if(c.contains(msX, Gdx.graphics.getHeight()-msY)||grabbed)
+				{
+					centerOrbOnCursor();
+				}
+				else
+				{
+
+					sendOrbTowardsCursor();
+				}
+	    	}
+	    	
+	    	
 	    	//update all "actors" on the stage before drawing.
-	        
 	    	stage.act(Gdx.graphics.getDeltaTime());
 	    	if(stage.getActors().size>1)
 	    	{
@@ -120,11 +143,12 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 	    				if(checkCollisionOrb(orb, (AnimatedObject)stage.getActors().get(i) ))
 	    				{
 	    					((AnimatedObject)stage.getActors().get(i)).collide(orb);
-	    					
 	    				}
     			}
 	    	}
-	        //Start the sprite batch processor
+
+	    	
+	    	//Start the sprite batch processor
 	        batch.begin();
 	        
 	        //Set camera to draw
@@ -234,10 +258,13 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 		{
 			if(Input.Buttons.LEFT==button)
 			{
-				orb.getOriginX();
+
+			//	orb.getOriginX();
 			//	centerOrbOnCursor();
-				sendOrbTowardsCursor();
-				leftdown=true;
+				if(grabbed)
+					centerOrbOnCursor();
+				else
+					sendOrbTowardsCursor();
 			}
 			else
 			{
@@ -263,6 +290,7 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 				xLocationSamples = new FixedSizeQueue<Integer>(maxNumMouseDragSamples);
 				yLocationSamples = new FixedSizeQueue<Integer>(maxNumMouseDragSamples);
 				 */
+				grabbed=false;
 			}
 			else
 			{				
@@ -292,16 +320,7 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 		public boolean touchDragged(int screenX, int screenY, int pointer) {
 			if(leftdown)
 			{
-				//GetX points to bottom-left of a sprite
-			//TODO orb.setX(Gdx.input.getX());
-				
-				//getY is the opposite for GDX.input as it is for sprites for some reason
-				//0 is bottom for sprites and top for mouse.
-			//TODO orb.setY(Gdx.graphics.getHeight() - Gdx.input.getY());
-				
-				
-				//centerOrbOnCursor();
-				sendOrbTowardsCursor();
+	
 			}
 			else
 			{
@@ -316,6 +335,7 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 		 */
 		private void centerOrbOnCursor()
 		{
+			grabbed=true;
 			float msX=Gdx.input.getX();
 			float msY=Gdx.input.getY();
 			float X = Gdx.input.getX();
@@ -336,7 +356,9 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 			float msX=Gdx.input.getX();
 			float msY=Gdx.input.getY();
 			Circle c = (Circle) orb.getShape();
-			//TODO
+			
+			
+			//TODO: FIX Y SAMPLING?
 			xLocationSamples = new FixedSizeQueue<Integer>(maxNumMouseDragSamples);
 			yLocationSamples = new FixedSizeQueue<Integer>(maxNumMouseDragSamples);
 
@@ -344,20 +366,17 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 			xLocationSamples.add((int) msX);
 			
 			yLocationSamples.add((int) (Gdx.graphics.getHeight()-c.y));
-			yLocationSamples.add((int)msY);
-
-			System.out.println("MOUSE:" + msX + " BALLX:" + c.x);
-			System.out.println("MOUSEY:" + msY + " BALLy:" + c.y);
-			
+			yLocationSamples.add((int)msY);			
 			
 			orb.setDeltaX(getAverage(xLocationSamples));
 
 			int deltY=(int) getAverage(yLocationSamples);
+		
+			orb.setDeltaY(deltY);
+			
 			System.out.println("deltY="+deltY);
 			orb.setDeltaY(-deltY);
 
-			
-			
 		}
 		
 		
