@@ -11,7 +11,7 @@ public class ThrowingOrb extends AnimatedObject {
 	final static float THROWSPEED = (float) .5;
 	final static float SCALE =  0.4f;
 	float debugTimer;
-	final float maxSpeed=20;
+	final float maxSpeed=5;
 	final static String filename="orbPacked.atlas";
 	float width ;
 	float radius;
@@ -105,13 +105,18 @@ public class ThrowingOrb extends AnimatedObject {
 	{
 		if(movementX>maxSpeed)
 			movementX=maxSpeed;
+		else if(movementX<-maxSpeed)
+			movementX=-maxSpeed;
+		
 		deltaX=movementX;
 	}
 
 	public void setDeltaY(float movementY)
 	{
-		if(movementY>maxSpeed)
+		if(movementY>maxSpeed )
 			movementY=maxSpeed;
+		else if (movementY<-maxSpeed)
+			movementY=-maxSpeed;
 		deltaY=movementY;
 	}
 	

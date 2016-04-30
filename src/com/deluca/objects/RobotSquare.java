@@ -10,7 +10,7 @@ public class RobotSquare extends AnimatedObject {
 
 
 	final static float SCALE =  2.5f;
-	final float maxSpeed=20;
+	final float maxSpeed=5;
 	final int frames=9;
 	final static String filename="CrocSheet.atlas";
 	float width;
