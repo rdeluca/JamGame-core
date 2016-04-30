@@ -48,6 +48,6 @@ public abstract class AnimatedObject extends Image
 	}
 	
 
-	protected abstract void collide(Actor actor);
+	public abstract void collide(Actor actor);
 
 }

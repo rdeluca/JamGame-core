@@ -117,8 +117,7 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 	    				//if it is
 	    				if(checkCollisionOrb(orb, (AnimatedObject)stage.getActors().get(i) ))
 	    				{
-	    					//check what side it's on
-	    					
+	    					((AnimatedObject)stage.getActors().get(i)).collide(orb);
 	    					
 	    				}
     			}
@@ -194,14 +193,16 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 			if(rect.contains(top)||rect.contains(bot))
 			{
 				intersect=true;
-				orb.bounceX();
-			}
-			else if(rect.contains(left)||rect.contains(right))
-			{
 				orb.bounceY();
+
+			}if(rect.contains(left)||rect.contains(right))
+			{
+				intersect=true;
+				orb.bounceX();
+
 			}
-			//or the circle contains the corners of the rectangle
-			if(c.contains(botLeft)||c.contains(botRight)||c.contains(topLeft)||c.contains(topRight))
+			//and if it isn't already doing one of the above - or the circle contains the corners of the rectangle
+			if(!intersect&&(c.contains(botLeft)||c.contains(botRight)||c.contains(topLeft)||c.contains(topRight)))
 			{
 				intersect=true;
 				orb.bounce();

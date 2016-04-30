@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
-public class WalkCroc extends AnimatedObject {
+public class RobotSquare extends AnimatedObject {
 
 
 	final static float SCALE =  2.5f;
@@ -19,7 +19,7 @@ public class WalkCroc extends AnimatedObject {
 
     
     
-	public WalkCroc(float startX, float startY) {
+	public RobotSquare(float startX, float startY) {
 		super(filename, 16, 3, startX, startY);
 		textureAtlas = new TextureAtlas(Gdx.files.internal(filename));
 		width = getWidth()*SCALE;
