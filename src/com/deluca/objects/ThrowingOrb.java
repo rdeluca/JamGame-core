@@ -2,6 +2,7 @@ package com.deluca.objects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Circle;
@@ -11,51 +12,66 @@ public class ThrowingOrb extends AnimatedObject {
 	final static float THROWSPEED = (float) .5;
 	final static float SCALE =  0.4f;
 	float debugTimer;
-	final float maxSpeed=5;
+	final float maxSpeed=15;
 	final static String filename="orbPacked.atlas";
-	float width ;
+	float width;
+	float height;
 	float radius;
 	float deltaX=0f, deltaY=0f;
     public static Sound ballSound = Gdx.audio.newSound(Gdx.files.internal("boing.ogg"));
-
+    boolean grabbed=false;
 	
 	
 	public ThrowingOrb(float x, float y) {
-		super(filename, 16, 3, x, y);
-		textureAtlas = new TextureAtlas(Gdx.files.internal(filename));
+		super(filename, x, y);
+		
 		width = getWidth()*SCALE;
+		height=width;		
 		radius=width/2;
-		setBounds(0,0,width,width);
 		loopback = true;
 		debugTimer = 0;
-		
-		Circle c = new Circle(x+(width/2),y+(width/2),width/2f);
+        Circle c = new Circle(x+(width/2),y+(width/2),width/2f);
 		setShape(c);
+		setWidth(width);
+		setHeight(height);
+		layout();
+		
+        animationSpeed=1/15f;
+		textureAtlas = new TextureAtlas(Gdx.files.internal(filename));
+        animation = new Animation(animationSpeed, textureAtlas.getRegions());
+		frames = textureAtlas.getRegions().size;
+
+		
 	}
 
 	@Override
 	public void draw(Batch batch, float alpha) {
 
-	/*	System.out.println("mX= "+ Gdx.input.getX());
-		System.out.println("mY= "+ Gdx.input.getY());
-
-
-		float topright=sprite.getBoundingRectangle().y+width;
-		float botright=sprite.getBoundingRectangle().x+width;
-		System.out.println(width);
-		System.out.println(sprite.getBoundingRectangle().y+"______"+topright);
-		System.out.println(sprite.getBoundingRectangle().x +"______"+botright );		
-		System.out.println("-----------------------");
-		System.out.println(sprite.getY());
-		System.out.println(sprite.getX());		
-		System.out.println("================================");
-*/
-		super.draw(batch, 1);
+		Circle c = (Circle) getShape();
+		
+		elapsedTime += Gdx.graphics.getDeltaTime();
+        batch.draw(animation.getKeyFrame(elapsedTime, true), getX(),getY(), 
+        		c.x, c.y, width, height,1,1,0);
 	}
 
 	@Override
 	public void act(float delta) {
 
+		if(grabbed)
+		{
+			float msX = Gdx.input.getX();
+			float msY = Gdx.graphics.getHeight() - Gdx.input.getY();
+			Circle c= (Circle)getShape();
+			System.out.println("MOUSEX:" + msX + " imageX:" + getX()+ " ballX:"+c.x);
+			System.out.println("MOUSEY:" + (Gdx.graphics.getHeight()-msY) + " imageY:" + getY()+ " ballY:"+c.y);
+
+
+			setX(msX-(width/2));
+			setY(msY-(height/2));
+			setDeltaX(0);
+			setDeltaY(0);
+		}
+		
 		
 		//if the ball is moving AND (if the new position is greater than the width of the screen)  OR (the position is less than or equal to zero)
 		if(deltaX!=0&&(getNewXLoc()+width>=Gdx.graphics.getWidth()||getNewXLoc()<=0))
@@ -72,9 +88,8 @@ public class ThrowingOrb extends AnimatedObject {
 
 		setX(getNewXLoc());
 		setY(getNewYLoc());
-		
 		setCenter();
-				
+
 		super.act(delta);
 	}
 
@@ -139,4 +154,13 @@ public class ThrowingOrb extends AnimatedObject {
 		deltaY=-deltaY;
 	}
 
+	public void setGrabbed(boolean b) {
+		grabbed=b;	
+	}
+	
+	public boolean getGrabbed()
+	{
+		return grabbed;
+	}
+	
 }

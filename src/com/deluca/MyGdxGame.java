@@ -41,16 +41,13 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
         ThrowingOrb orb;
         WalkCroc croc;
         private final int maxNumMouseDragSamples = 3;
-        FixedSizeQueue<Integer> xLocationSamples = new FixedSizeQueue<Integer>(maxNumMouseDragSamples);
-        FixedSizeQueue<Integer> yLocationSamples = new FixedSizeQueue<Integer>(maxNumMouseDragSamples);
+        FixedSizeQueue<Float> xLocationSamples = new FixedSizeQueue<Float>(maxNumMouseDragSamples);
+        FixedSizeQueue<Float> yLocationSamples = new FixedSizeQueue<Float>(maxNumMouseDragSamples);
 //        FixedSizeQueue<Vector2> locationSamples = new FiedSizeQueue<Vector2>(maxNumMouseDragSamples);
         
         float clickX=0;
         float clickY=0;
         int numLocs=0;
-        
-        boolean grabbed=false;
-        boolean leftdown=false;
         
         
 	    @Override
@@ -110,25 +107,29 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 			float msY=Gdx.input.getY();
 			Circle c = (Circle) orb.getShape();
 			
-			System.out.println("MOUSE:" + msX + " BALLX:" + c.x);
-			System.out.println("MOUSEY:" + (Gdx.graphics.getHeight()-msY) + " BALLy:" + c.y);
-			System.out.println(c.contains(msX, Gdx.graphics.getHeight()-msY));
 			
 	    	if(Gdx.input.isButtonPressed(Input.Buttons.LEFT))
 	    	{
 	    		
-				
-				if(c.contains(msX, Gdx.graphics.getHeight()-msY)||grabbed)
+				if(!orb.getGrabbed())
 				{
-					centerOrbOnCursor();
+					if(c.contains(msX, Gdx.graphics.getHeight()-msY))
+					{
+						orb.setGrabbed(true);
+					}
+					else
+					{
+						sendOrbTowardsCursor();
+					}
 				}
 				else
 				{
-
-					sendOrbTowardsCursor();
+					xLocationSamples.offer(msX);
+					yLocationSamples.offer(msY);
+					orb.setGrabbed(true);
 				}
 	    	}
-	    	
+			
 	    	
 	    	//update all "actors" on the stage before drawing.
 	    	stage.act(Gdx.graphics.getDeltaTime());
@@ -261,9 +262,7 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 
 			//	orb.getOriginX();
 			//	centerOrbOnCursor();
-				if(grabbed)
-					centerOrbOnCursor();
-				else
+				if(!orb.getGrabbed())
 					sendOrbTowardsCursor();
 			}
 			else
@@ -280,17 +279,21 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 
 			if(Input.Buttons.LEFT==button)
 			{
-				/*
-				orb.setDeltaX(getAverage(xLocationSamples));
+				if(orb.getGrabbed())
+				{	
+					float x= getAverage(xLocationSamples);
+					orb.setDeltaX(x);
+					
+					float y=-getAverage(yLocationSamples);
+					//TODO: NOTE - NEGATIVE Y. y is opposite direction than x. Change getAvg?
+					orb.setDeltaY(y);
 
-				//TODO: NOTE - NEGATIVE Y. y is opposite direction than x. Change getAvg?
-				orb.setDeltaY(-getAverage(yLocationSamples));
-								
-				leftdown=false;
-				xLocationSamples = new FixedSizeQueue<Integer>(maxNumMouseDragSamples);
-				yLocationSamples = new FixedSizeQueue<Integer>(maxNumMouseDragSamples);
-				 */
-				grabbed=false;
+					System.out.println("dx"+x);
+					System.out.println("dy"+y);
+					xLocationSamples = new FixedSizeQueue<Float>(maxNumMouseDragSamples);
+					yLocationSamples = new FixedSizeQueue<Float>(maxNumMouseDragSamples);
+				}
+				orb.setGrabbed(false);
 			}
 			else
 			{				
@@ -302,7 +305,7 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 			return true;
 		}
 
-		private float getAverage(LinkedList<Integer> queue) {
+		private float getAverage(LinkedList<Float> queue) {
 			int numVals=queue.size();
 			float averageDistance=0;
 			float first=queue.poll();
@@ -318,14 +321,6 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 
 		@Override
 		public boolean touchDragged(int screenX, int screenY, int pointer) {
-			if(leftdown)
-			{
-	
-			}
-			else
-			{
-				
-			}
 			return true;
 		}
 
@@ -333,22 +328,10 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 		 * Center orb on mouse 
 		 * Add location to sample list
 		 */
-		private void centerOrbOnCursor()
+		private void centerOrbOcdsdcsdsnCursor()
 		{
-			grabbed=true;
-			float msX=Gdx.input.getX();
-			float msY=Gdx.input.getY();
-			float X = Gdx.input.getX();
-			float Y = Gdx.graphics.getHeight() - Gdx.input.getY();
-	
-			orb.setX(X - (orb.getImageWidth() / 2));
-			orb.setY(Y - (orb.getImageWidth() / 2));
-			orb.setDeltaX(0);
-			orb.setDeltaY(0);
+			orb.setGrabbed(true);
 
-			//Give queue the new touched location
-			xLocationSamples.offer(Gdx.input.getX());		
-			yLocationSamples.offer(Gdx.input.getY());
 		}
 
 		private void sendOrbTowardsCursor()
@@ -358,15 +341,15 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
 			Circle c = (Circle) orb.getShape();
 			
 			
-			//TODO: FIX Y SAMPLING?
-			xLocationSamples = new FixedSizeQueue<Integer>(maxNumMouseDragSamples);
-			yLocationSamples = new FixedSizeQueue<Integer>(maxNumMouseDragSamples);
+			xLocationSamples = new FixedSizeQueue<Float>(maxNumMouseDragSamples);
+			yLocationSamples = new FixedSizeQueue<Float>(maxNumMouseDragSamples);
 
-			xLocationSamples.add((int) c.x);
-			xLocationSamples.add((int) msX);
+			//Average where ball is and where cursor is to get speed to send towards cursor
+			xLocationSamples.add( c.x);
+			xLocationSamples.add( msX);
 			
-			yLocationSamples.add((int) (Gdx.graphics.getHeight()-c.y));
-			yLocationSamples.add((int)msY);			
+			yLocationSamples.add( (Gdx.graphics.getHeight()-c.y));
+			yLocationSamples.add(msY);			
 			
 			orb.setDeltaX(getAverage(xLocationSamples));
 

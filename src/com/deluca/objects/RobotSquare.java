@@ -20,7 +20,7 @@ public class RobotSquare extends AnimatedObject {
     
     
 	public RobotSquare(float startX, float startY) {
-		super(filename, 16, 3, startX, startY);
+		super(filename, startX, startY);
 		textureAtlas = new TextureAtlas(Gdx.files.internal(filename));
 		width = getWidth()*SCALE;
 		height = getHeight()*SCALE;
