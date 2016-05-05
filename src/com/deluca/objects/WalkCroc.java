@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 public class WalkCroc extends AnimatedObject {
 
 
+	final boolean DEBUG = false;
 	final static float SCALE =  2.5f;
 	final float maxSpeed=20;
 	final static String filename="CrocSheet.atlas";
@@ -20,7 +21,7 @@ public class WalkCroc extends AnimatedObject {
 	float deltaX=0f, deltaY=0f;
 	Animation activeAnimation, animationTwo, animationEnd;
 	ArrayList<Animation> animationList=	new ArrayList<Animation>();
-	int currAnimation=0;	
+	int currAnimation=0;
 	
 	public WalkCroc(float startX, float startY) 
 	{
@@ -34,18 +35,18 @@ public class WalkCroc extends AnimatedObject {
 		
         animationSpeed=1/15f;
 		textureAtlas = new TextureAtlas(Gdx.files.internal(filename));
-        animation = new Animation(animationSpeed,textureAtlas.findRegion("0001"));
+        animation = new Animation(animationSpeed,textureAtlas.findRegion("0004"));
 		frames = textureAtlas.getRegions().size;
-        animationTwo = new Animation(animationSpeed,textureAtlas.findRegion("0001"));
 		    	
 		activeAnimation = new Animation(0.5f,
 		        (textureAtlas.findRegion("0002")),
 		        (textureAtlas.findRegion("0003")));
-		animationEnd = new Animation(animationSpeed, textureAtlas.findRegions("0004"));
+		animationEnd = new Animation(animationSpeed, textureAtlas.findRegions("0001"));
 		animationList.add(animation);
-	//	animationList.add(animationTwo);
 		animationList.add(activeAnimation);
 		animationList.add(animationEnd);
+		animationList.add(new Animation(animationSpeed,textureAtlas.findRegion("0005"))  );
+		
 	}
 
 	@Override
@@ -81,10 +82,22 @@ public class WalkCroc extends AnimatedObject {
 
 	@Override
 	public void collide(Actor actor) {
-		if(currAnimation<animationList.size()-1)
-			currAnimation++;
+		
+		if(currAnimation<animationList.size()-2)
+		{
+			if(!DEBUG)
+				currAnimation++;
+		}
 		else
-			currAnimation=0;
+		{
+			currAnimation=3;
+			width=textureAtlas.findRegion("0005").originalWidth*SCALE;
+			height=textureAtlas.findRegion("0005").originalHeight*SCALE;
+			Rectangle rect = (Rectangle)getShape();
+			rect.width=width;
+			rect.height=height;
+			setShape(rect);
+		}
 	}
 	
 	

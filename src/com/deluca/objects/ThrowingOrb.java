@@ -9,7 +9,9 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public class ThrowingOrb extends AnimatedObject {
-	final static float THROWSPEED = (float) .5;
+	
+	final static float SLOWSPEED =.85f;
+	final static float THROWSPEED = .5f;
 	final static float SCALE =  0.4f;
 	float debugTimer;
 	final float maxSpeed=15;
@@ -40,8 +42,6 @@ public class ThrowingOrb extends AnimatedObject {
 		textureAtlas = new TextureAtlas(Gdx.files.internal(filename));
         animation = new Animation(animationSpeed, textureAtlas.getRegions());
 		frames = textureAtlas.getRegions().size;
-
-		
 	}
 
 	@Override
@@ -65,7 +65,6 @@ public class ThrowingOrb extends AnimatedObject {
 			System.out.println("MOUSEX:" + msX + " imageX:" + getX()+ " ballX:"+c.x);
 			System.out.println("MOUSEY:" + (Gdx.graphics.getHeight()-msY) + " imageY:" + getY()+ " ballY:"+c.y);
 
-
 			setX(msX-(width/2));
 			setY(msY-(height/2));
 			setDeltaX(0);
@@ -77,12 +76,15 @@ public class ThrowingOrb extends AnimatedObject {
 		if(deltaX!=0&&(getNewXLoc()+width>=Gdx.graphics.getWidth()||getNewXLoc()<=0))
 		{
 			deltaX=-deltaX;
+			collide(null);
 			playsound();
 		}
 
 		if(deltaY!=0&&(getNewYLoc()+width>=Gdx.graphics.getHeight()||getNewYLoc()<=0))
 		{
+
 			deltaY=-deltaY;
+			collide(null);
 			playsound();
 		}
 
@@ -134,14 +136,28 @@ public class ThrowingOrb extends AnimatedObject {
 			movementY=-maxSpeed;
 		deltaY=movementY;
 	}
+
+	
+	
+	
 	
 	@Override
 	public void collide(Actor actor) 
 	{
-		
+		setDeltaX(deltaX*SLOWSPEED);
+		setDeltaY(deltaY*SLOWSPEED);
+
 	}
 
 	public void bounce() {
+		if(deltaX==0)
+		{
+			deltaX=1;
+		}
+		if(deltaY==0)
+		{
+			deltaY=1;
+		}
 		deltaX=-deltaX;
 		deltaY=-deltaY;
 	}
@@ -162,5 +178,6 @@ public class ThrowingOrb extends AnimatedObject {
 	{
 		return grabbed;
 	}
-	
+
+
 }

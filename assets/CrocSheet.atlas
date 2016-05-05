@@ -6,29 +6,36 @@ filter: Nearest,Nearest
 repeat: none
 0001
   rotate: false
-  xy: 2, 110
-  size: 19, 34
-  orig: 19, 34
+  xy: 3, 110
+  size: 17, 34
+  orig: 17, 34
   offset: 0, 0
   index: -1
 0002
   rotate: false
-  xy: 2, 74
-  size: 19, 34
-  orig: 19, 34
+  xy: 3, 74
+  size: 17, 34
+  orig: 17, 34
   offset: 0, 0
   index: -1
 0003
   rotate: false
-  xy: 2, 38
-  size: 19, 34
-  orig: 19, 34
+  xy: 3, 38
+  size: 17, 34
+  orig: 17, 34
   offset: 0, 0
   index: -1
 0004
   rotate: false
-  xy: 2, 2
-  size: 19, 34
-  orig: 19, 34
+  xy: 3, 2
+  size: 17, 34
+  orig: 17, 34
+  offset: 0, 0
+  index: -1
+0005
+  rotate: false
+  xy: 3, 175
+  size: 15, 5
+  orig: 15, 5
   offset: 0, 0
   index: -1
