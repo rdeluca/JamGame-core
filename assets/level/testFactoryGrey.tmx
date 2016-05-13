@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="20" height="20" tilewidth="32" tileheight="32" nextobjectid="1">
+ <tileset firstgid="1" name="Test1" tilewidth="32" tileheight="32" tilecount="1">
+  <image source="../FloorTile.gif" trans="ff00ff" width="32" height="32"/>
+ </tileset>
+ <tileset firstgid="2" name="FloorTile2" tilewidth="32" tileheight="32" tilecount="9">
+  <image source="../FloorTile.png" trans="ff00ff" width="96" height="96"/>
+ </tileset>
+ <tileset firstgid="11" name="Wall2" tilewidth="32" tileheight="32" tilecount="16">
+  <image source="../WallTiles.png" trans="ff00ff" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="27" name="FullFloorHooks" tilewidth="32" tileheight="32" tilecount="9">
+  <image source="../FullFloorHooks.png" trans="ff00ff" width="96" height="96"/>
+ </tileset>
+ <tileset firstgid="36" name="FloorTileLighter" tilewidth="32" tileheight="32" tilecount="9">
+  <image source="../FloorTileLighter.png" trans="ff00ff" width="96" height="96"/>
+ </tileset>
+ <tileset firstgid="45" name="FloorHooks" tilewidth="32" tileheight="32" tilecount="9">
+  <image source="../FullFloorHooks2.png" trans="ff00ff" width="96" height="96"/>
+ </tileset>
+ <layer name="baseLayer" width="20" height="20">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAACxNmYGCQAGI2KJYkAsvjEBeGYiYk85iBmAWJjw0b4RCHmceKJs5OQ/OkgVgPDRtiEWMk0jx5Krtv1LxR80gxTxGIlZCwCQMkPcuSaR42bITD3QNhni4DZl41pcA8Y7Twg2FTHOZxk+FfXBhkngAVsRADpKwHldVSaGwpJDFiMUg9ABnf8dpABgAA
+  </data>
+ </layer>
+ <layer name="overlayLayer" width="20" height="20">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NgGAWjYBSMglEwWIEAFjxYAABKJKlSQAYAAA==
+  </data>
+ </layer>
+ <layer name="collisionLayer" width="20" height="20">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC9NgYGDQoDLGBkbNGzVv1LxR80bNG14YAC3NZe1ABgAA
+  </data>
+ </layer>
+</map>

@@ -1,5 +1,7 @@
 package com.deluca;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.LinkedList;
 
 import com.badlogic.gdx.Gdx;
@@ -23,12 +25,17 @@ import com.deluca.objects.AnimatedObject;
 import com.deluca.objects.ThrowingOrb;
 import com.deluca.objects.WalkCroc;
 import com.deluca.util.FixedSizeQueue;
+import com.deluca.util.Level;
 
 public class Director implements InputProcessor {
 
+	public boolean DEBUG = true;
+
+	float numx = 0;
+	float numy = 0;
+
 	// LibGDX lib items
 	private Texture texture;
-	private Sprite background;
 	private Stage stage;
 	private Actor actor;
 	private OrthographicCamera camera;
@@ -43,33 +50,43 @@ public class Director implements InputProcessor {
 	FixedSizeQueue<Float> yLocationSamples = new FixedSizeQueue<Float>(
 			maxNumMouseDragSamples);
 
+	FileWriter writer;
+
+	private Level currentLevel;
+
 	enum orbSide {
 		left, right, top, bot
 	}
 
+	public Director(SpriteBatch spriteBatch, OrthographicCamera cam,
+			MyGdxGame myGdxGame) throws IOException {
 
-	public Director(SpriteBatch spriteBatch, OrthographicCamera cam, MyGdxGame myGdxGame) {
+		writer = new FileWriter("C:/gameJam/JamGame-core/assets/Points.txt");
 
 		game = myGdxGame;
-    	camera = cam;
-    	
-    	batch = spriteBatch;
-		texture = new Texture(Gdx.files.internal("background.png"));
-//		texture = new Texture(Gdx.files.internal("stock-photo-33531251.jpg"));
+		camera = cam;
+
+		Level levelOne = new Level("testFactoryGrey.tmx");
+		currentLevel = levelOne;
+		batch = spriteBatch;
+		texture = new Texture(Gdx.files.internal("map.png"));
+		// texture = new
+		// Texture(Gdx.files.internal("stock-photo-33531251.jpg"));
 
 		texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-    	background = new Sprite(texture);
-    		background.setOrigin(0,0);
-    		background.setPosition(-background.getWidth()/2,-background.getHeight()/2);
-	  
+		/*
+		 * background = new Sprite(texture); background.setOrigin(0,0);
+		 * background
+		 * .setPosition(-background.getWidth()/2,-background.getHeight()/2);
+		 */
 		Gdx.input.setInputProcessor((this));
 
-		
 		actor = new Actor();
 
 		int w = Gdx.graphics.getWidth();
 		int h = Gdx.graphics.getHeight();
-		System.out.println("w=" + w + ", h=" + h);
+		if(DEBUG)
+			System.out.println("w=" + w + ", h=" + h);
 
 		ScreenViewport viewport = new ScreenViewport();
 		stage = new Stage(viewport);
@@ -87,14 +104,29 @@ public class Director implements InputProcessor {
 
 	@Override
 	public boolean keyUp(int keycode) {
-		return false;
+		return currentLevel.keyUp(keycode);
 	}
 
 	@Override
 	public boolean keyTyped(char character) {
-		
-		if(character=='p')
-			game.pause();
+		try {
+			if (character == 'o')
+				DEBUG = !DEBUG;
+			if (character == 'p')
+				game.pause();
+			else if (character == 'm') {
+
+				writer.append("Mx: " + Gdx.input.getX() + ' ');
+				writer.append("My: " + Gdx.input.getY() + '\n');
+
+			} else if (character == 'b') {
+				writer.append("BadguyX: " + Gdx.input.getX() + ' ');
+				writer.append("BadguyY: " + Gdx.input.getY() + '\n');
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return false;
 	}
 
@@ -127,9 +159,11 @@ public class Director implements InputProcessor {
 					// TODO: NOTE - NEGATIVE Y. y is opposite direction than x.
 					// Change getAvg?
 					orb.setDeltaY(y);
-
-					System.out.println("dx" + x);
-					System.out.println("dy" + y);
+					if(DEBUG)
+					{	
+						System.out.println("dx" + x);
+						System.out.println("dy" + y);
+					}
 					xLocationSamples = new FixedSizeQueue<Float>(
 							maxNumMouseDragSamples);
 					yLocationSamples = new FixedSizeQueue<Float>(
@@ -162,8 +196,6 @@ public class Director implements InputProcessor {
 		return true;
 	}
 
-	// //
-
 	private void sendOrbTowardsCursor() {
 		float msX = Gdx.input.getX();
 		float msY = Gdx.input.getY();
@@ -185,7 +217,30 @@ public class Director implements InputProcessor {
 
 		float deltY = getAverage(yLocationSamples);
 		orb.setDeltaY(-deltY);
+	}
 
+	private void sendOrbTowardsPlayer() {
+
+		float msX = currentLevel.player.getX();
+		float msY = Gdx.graphics.getHeight() - currentLevel.player.getY();
+		Circle c = (Circle) orb.getShape();
+
+		xLocationSamples = new FixedSizeQueue<Float>(maxNumMouseDragSamples);
+		yLocationSamples = new FixedSizeQueue<Float>(maxNumMouseDragSamples);
+
+		// Average where ball is and where cursor is to get speed to send
+		// towards cursor
+		xLocationSamples.add(c.x);
+		xLocationSamples.add(msX);
+
+		yLocationSamples.add((Gdx.graphics.getHeight() - c.y));
+		yLocationSamples.add(msY);
+
+		float deltX = getAverage(xLocationSamples);
+		orb.setDeltaX(deltX);
+
+		float deltY = getAverage(yLocationSamples);
+		orb.setDeltaY(-deltY);
 	}
 
 	private float getAverage(LinkedList<Float> queue) {
@@ -274,6 +329,8 @@ public class Director implements InputProcessor {
 
 		// Clear screen
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		currentLevel.renderbot();
+
 		float msX = Gdx.input.getX();
 		float msY = Gdx.input.getY();
 		Circle c = (Circle) orb.getShape();
@@ -317,35 +374,20 @@ public class Director implements InputProcessor {
 		batch.setProjectionMatrix(camera.combined);
 
 		// Draw sprite
-		background.draw(batch);
+		// background.draw(batch);
 
 		batch.end();
-
-		/*
-		 * Camera movement
-		 */
-		if (Gdx.input.isKeyPressed(Input.Keys.LEFT))
-			camera.translate(-5f, 0);
-		if (Gdx.input.isKeyPressed(Input.Keys.RIGHT))
-			camera.translate(5f, 0);
-		if (Gdx.input.isKeyPressed(Input.Keys.UP))
-			camera.translate(0, 5f);
-		if (Gdx.input.isKeyPressed(Input.Keys.DOWN))
-			camera.translate(0, -5f);
-		camera.update();
-
 		stage.draw();
+		currentLevel.renderOverlay();
+
 	}
 
 	private void bounce() {
-		// TODO Auto-generated method stub
 		orb.bounce();
-
 	}
 
-	public void dispose() {
-		// TODO Auto-generated method stub
-		
+	public void dispose() throws IOException {
+		writer.close();
 	}
 
 }
