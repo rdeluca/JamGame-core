@@ -26,6 +26,7 @@ import com.deluca.objects.ThrowingOrb;
 import com.deluca.objects.WalkCroc;
 import com.deluca.util.FixedSizeQueue;
 import com.deluca.util.Level;
+import com.deluca.util.Utilities;
 
 public class Director implements InputProcessor {
 
@@ -82,11 +83,9 @@ public class Director implements InputProcessor {
 		Gdx.input.setInputProcessor((this));
 
 		actor = new Actor();
-
-		int w = Gdx.graphics.getWidth();
-		int h = Gdx.graphics.getHeight();
-		if(DEBUG)
-			System.out.println("w=" + w + ", h=" + h);
+		
+		if (DEBUG)
+			System.out.println("w=" + Utilities.getWindowWidth() + ", h=" +  Utilities.getWindowHeight());
 
 		ScreenViewport viewport = new ScreenViewport();
 		stage = new Stage(viewport);
@@ -104,7 +103,7 @@ public class Director implements InputProcessor {
 
 	@Override
 	public boolean keyUp(int keycode) {
-		return currentLevel.keyUp(keycode);
+		return false;
 	}
 
 	@Override
@@ -159,8 +158,7 @@ public class Director implements InputProcessor {
 					// TODO: NOTE - NEGATIVE Y. y is opposite direction than x.
 					// Change getAvg?
 					orb.setDeltaY(y);
-					if(DEBUG)
-					{	
+					if (DEBUG) {
 						System.out.println("dx" + x);
 						System.out.println("dy" + y);
 					}
@@ -168,7 +166,7 @@ public class Director implements InputProcessor {
 							maxNumMouseDragSamples);
 					yLocationSamples = new FixedSizeQueue<Float>(
 							maxNumMouseDragSamples);
-					
+
 				}
 			}
 			orb.setGrabbed(false);

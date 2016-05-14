@@ -2,7 +2,6 @@ package com.deluca.util;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -11,26 +10,28 @@ import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
-import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
 
 public class Level {
-	Texture img;
+
 	TiledMap tiledMap;
 	OrthographicCamera camera;
 	TiledMapRenderer tiledMapRenderer;
 	MapLayer mapBaseLayer;
 	MapLayer mapOverlayLayer;
 	MapLayer mapCollisionLayer;
+	final float CHARACTER_EDGE_BUFFER;
 
+	
 	SpriteBatch sb;
 	Texture texture;
 	public Sprite player;
 
-	final int SCREENHEIGHT;
+	final float SCREENHEIGHT;
+	final int MOVEMENT_AMT=4;
 	
 	int playerXMapCoord = 0;
 	int playerYMapCoord = 0;
@@ -56,8 +57,8 @@ public class Level {
 		camera.setToOrtho(false, levelWidth / xCameraZoom, levelHeight / yCameraZoom);
 		camera.update();
 
-		pixelWidth=(int) (Gdx.graphics.getWidth()/xCameraZoom);
-		pixelHeight=(int) (Gdx.graphics.getHeight()/yCameraZoom);
+		pixelWidth=(int) (Utilities.getWindowWidth()/xCameraZoom);
+		pixelHeight=(int) (Utilities.getWindowHeight()/yCameraZoom);
 		
 		// System.out.println(props.get());
 
@@ -79,21 +80,24 @@ public class Level {
 		mapOverlayLayer = tiledMap.getLayers().get(1);
 		mapCollisionLayer = tiledMap.getLayers().get(2);
 		mapCollisionLayer.getObjects();
-		SCREENHEIGHT=(int) (levelHeight/yCameraZoom);
+		SCREENHEIGHT= (levelHeight/yCameraZoom);
+		CHARACTER_EDGE_BUFFER= ((3 * player.getHeight()) * player.getScaleY());
 	}
 
 	public void renderbot() {
-		Gdx.gl.glClearColor(1, 0, 0, 1);
-		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		update();
+		
+		
 		camera.update();
-
 		sb.begin();
-
 		tiledMapRenderer.setView(camera);
 		tiledMapRenderer.renderTileLayer((TiledMapTileLayer) mapBaseLayer);
 		player.draw(sb);
 		sb.end();
+	}
+
+	private void update() {
+		checkKeyPress();		
 	}
 
 	public void renderOverlay() {
@@ -103,74 +107,96 @@ public class Level {
 		sb.end();
 	}
 
-	public boolean keyUp(int keycode) {
-		MapProperties props = tiledMap.getProperties();
-
-		// if()
+	public boolean checkKeyPress() 
+	{
+		float msx = Utilities.getMouseX();
+		float msy = Utilities.getMouseY();
+		Vector2 cellVector  = Utilities.getCell(msx, msy, this);
+	
+//		if(Gdx.input.isKeyPressed(Input.Keys.W))
+		//
 		{
-			// CELLS ARE: 20x20
-			// SCREEN IS: 1280x720
-			// "cell size": 64x75
-
-			// 75 height of cell
-
-			// Width is 20 tiles.
-			// Screen width is 1280
-			// viewportWidth=640.0
-			// RATIO OF WIDTH TO VIEWPORT IS: 2:1
-			// 64 pixel wide tiles
-			// 64 px/tile = 1280px/20 tiles
-			// pxPerTileWide= pixelWidth/numTiles
-			// 1.6px= x/y
-			//
-
-			int numTilesWide = (int) ((Gdx.graphics.getWidth() / camera.viewportWidth));
-			int screenTileWidth = Gdx.graphics.getWidth() / numTilesWide;
-			int numTilesHigh = (int) ((Integer) (tiledMap.getProperties()
-					.get("height")) / (Gdx.graphics.getHeight() / camera.viewportHeight));
-			int screenTileHigh = Gdx.graphics.getHeight() / numTilesHigh;
-
-			float msx = Gdx.input.getX();
-			float msy = (Gdx.graphics.getHeight() - Gdx.input.getY());
-
-			int cellX = (int) (msx / screenTileWidth);
-			int cellY = (int) (msy / screenTileHigh);
-			/*
-			 * System.out.println(props.get("tilewidth"));
-			 * System.out.println(props.get("tileheight"));
-			 * System.out.println("msx:"+msy+" msy:"+msy);
-			 * System.out.println("cellX:"+cellX+" cellY:"+cellY);
-			 */
-
-			Cell cell = ((TiledMapTileLayer) mapOverlayLayer).getCell(cellX,
-					cellY);
-			if (cell != null) {
-				TiledMapTile i = cell.getTile();
-				i.getId();
+			if(Gdx.input.isKeyPressed(Input.Keys.W))
+			{
+				if (playerYMapCoord + CHARACTER_EDGE_BUFFER < pixelHeight) 
+	
+				{
+					playerYMapCoord += MOVEMENT_AMT;
+					player.setY(player.getY() + MOVEMENT_AMT);
+				} 
+				else 
+				{
+					boolean arg2=maxYCoord<levelHeight;
+					if ( arg2) 
+					{
+						
+						camera.translate(0, MOVEMENT_AMT);
+						player.setY(player.getY() + MOVEMENT_AMT);
+						maxYCoord+=MOVEMENT_AMT;
+					}
+					else
+					{
+						if(player.getY()<levelHeight)
+						{						
+							player.setY(player.getY()+MOVEMENT_AMT);
+							playerYMapCoord+=MOVEMENT_AMT;
+						}
+					}
+				}
 			}
-			//System.out.println(cell != null);
-		}
-
-		// sprite.getY()+((3*sprite.getHeight())*sprite.getScaleY())<Gdx.graphics.getHeight()
-
-		float characterEdgeBuffer = ((3 * player.getHeight()) * player
-				.getScaleY());
-
-
-		System.out.println("playerYMapCoord:"+playerYMapCoord);
-		System.out.println("PlayerY:"+player.getY());
-		System.out.println("maxYCoord:"+maxYCoord);
-		System.out.println("=========");
+			else if(Gdx.input.isKeyPressed(Input.Keys.S))
+			{
+				if (playerYMapCoord - CHARACTER_EDGE_BUFFER > 0) 
+				{
+					playerYMapCoord -= MOVEMENT_AMT;
+					player.setY(player.getY() - MOVEMENT_AMT);
+				} 
+				else 
+				{
+					boolean arg1=playerYMapCoord>0;
+					boolean arg2=maxYCoord-SCREENHEIGHT>0;
+					if (arg1&&arg2) 
+					{
+						camera.translate(0, -MOVEMENT_AMT);
+						player.setY(player.getY() - MOVEMENT_AMT);
+						maxYCoord-=MOVEMENT_AMT;
+					}
+					else
+					{
+	 					if(player.getY()>0)
+						{
+							player.setY(player.getY()-MOVEMENT_AMT);
+							playerYMapCoord-=MOVEMENT_AMT;
+						}
+					}
+				}
+			}
+			
+			if(Gdx.input.isKeyPressed(Input.Keys.A))
+			{
+				player.setX(player.getX() - MOVEMENT_AMT);
+			}		
+			else if(Gdx.input.isKeyPressed(Input.Keys.D))
+			{			
+				player.setX(player.getX() + MOVEMENT_AMT);
+			}
+		}	
+		return true;
+	}
+/*	
+	public boolean keyup(int keycode) {
+		float msx = QuickRefs.getMouseX();
+		float msy = QuickRefs.getMouseY();
+		Vector2 cellVector  = getCell(msx, msy);
 		
 		switch (keycode) 
 		{
 
 		case Input.Keys.W:
-			if (playerYMapCoord + characterEdgeBuffer < pixelHeight) 
+			if (playerYMapCoord + CHARACTER_EDGE_BUFFER < pixelHeight) 
 			{
 				playerYMapCoord += 32;
 				player.setY(player.getY() + 32);
-				System.out.println("UP");
 			} 
 			else 
 			{
@@ -182,7 +208,6 @@ public class Level {
 				//	playerYMapCoord += 32;
 					player.setY(player.getY() + 32);
 					maxYCoord+=32;
-					System.out.println("UPnMAPUP");
 				}
 				else
 				{
@@ -190,17 +215,15 @@ public class Level {
 					{						
 						player.setY(player.getY()+32);
 						playerYMapCoord+=32;
-						System.out.println("TopOfLevel");
 					}
 				}
 			}
 			break;
 		case Input.Keys.S:
-			if (playerYMapCoord - characterEdgeBuffer > 0) 
+			if (playerYMapCoord - CHARACTER_EDGE_BUFFER > 0) 
 			{
 				playerYMapCoord -= 32;
 				player.setY(player.getY() - 32);
-				System.out.println("DOWN");
 			} 
 			else 
 			{
@@ -213,15 +236,12 @@ public class Level {
 //					playerYMapCoord=32;
 					player.setY(player.getY() - 32);
 					maxYCoord-=32;
-					System.out.println("DOWNandMapDown");
 				}
 				else
 				{
-					System.out.println(arg1+" "+arg2);
-					if(player.getY()>0)
+ 					if(player.getY()>0)
 					{
 						player.setY(player.getY()-32);
-						System.out.println("bottomOfMap");
 						playerYMapCoord-=32;
 					}
 				}
@@ -234,25 +254,11 @@ public class Level {
 		case Input.Keys.D:
 			player.setX(player.getX() + 32);
 			break;
-		case Input.Keys.NUM_1:
-			tiledMap.getLayers().get(0)
-					.setVisible(!tiledMap.getLayers().get(0).isVisible());
-			break;
-		case Input.Keys.NUM_2:
-			tiledMap.getLayers().get(1)
-					.setVisible(!tiledMap.getLayers().get(1).isVisible());
-			break;
-		case Input.Keys.H:
-			System.out.println("X:" + player.getX() + " Y:" + player.getY());
-			break;
-		case Input.Keys.J:
-			System.out.println(Gdx.input.getX() + " "
-					+ (Gdx.graphics.getHeight() - Gdx.input.getY()));
-		case Input.Keys.Z:
-			System.out.println("playerXMapCoord:" + playerXMapCoord + " playerYMapCoord:" + playerYMapCoord);
 		}
 
-		return false;
+		return true;
 	}
+*/
+	
 
 }

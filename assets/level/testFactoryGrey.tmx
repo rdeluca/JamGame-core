@@ -20,7 +20,7 @@
  </tileset>
  <layer name="baseLayer" width="20" height="20">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAACxNmYGCQAGI2KJYkAsvjEBeGYiYk85iBmAWJjw0b4RCHmceKJs5OQ/OkgVgPDRtiEWMk0jx5Krtv1LxR80gxTxGIlZCwCQMkPcuSaR42bITD3QNhni4DZl41pcA8Y7Twg2FTHOZxk+FfXBhkngAVsRADpKwHldVSaGwpJDFiMUg9ABnf8dpABgAA
+   H4sIAAAAAAAACxNmYGCQAGIdINYCYkkisDwOcWEoZgJiNihmBmIWJD42bIRDHGYeK5o4Ow3NkwZiPTRsiEWMkUjz5KnsvlHzRs0jxTxFIFZCwiYMkPQsS6Z52LARDncPhHm6DJh51ZQC84zRwg+GTXGYx02Gf3FhkHkCVMRCDJCyHlRWS6GxpZDEiMUg9QAj4AGTQAYAAA==
   </data>
  </layer>
  <layer name="overlayLayer" width="20" height="20">
@@ -28,7 +28,7 @@
    H4sIAAAAAAAAC2NgGAWjYBSMglEwWIEAFjxYAABKJKlSQAYAAA==
   </data>
  </layer>
- <layer name="collisionLayer" width="20" height="20" visible="0">
+ <layer name="collisionLayer" width="20" height="20">
   <data encoding="base64" compression="gzip">
    H4sIAAAAAAAAC9NgYGDQoDLGBkbNGzVv1LxR80bNG14YAC3NZe1ABgAA
   </data>
