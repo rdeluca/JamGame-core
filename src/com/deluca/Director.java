@@ -168,6 +168,7 @@ public class Director implements InputProcessor {
 							maxNumMouseDragSamples);
 					yLocationSamples = new FixedSizeQueue<Float>(
 							maxNumMouseDragSamples);
+					
 				}
 			}
 			orb.setGrabbed(false);
@@ -328,7 +329,6 @@ public class Director implements InputProcessor {
 	public void render() {
 
 		// Clear screen
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		currentLevel.renderbot();
 
 		float msX = Gdx.input.getX();
@@ -378,8 +378,9 @@ public class Director implements InputProcessor {
 
 		batch.end();
 		stage.draw();
+		batch.begin();
 		currentLevel.renderOverlay();
-
+		batch.end();
 	}
 
 	private void bounce() {
