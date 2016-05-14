@@ -156,6 +156,12 @@ public class Level {
 		float characterEdgeBuffer = ((3 * player.getHeight()) * player
 				.getScaleY());
 
+
+		System.out.println("playerYMapCoord:"+playerYMapCoord);
+		System.out.println("PlayerY:"+player.getY());
+		System.out.println("maxYCoord:"+maxYCoord);
+		System.out.println("=========");
+		
 		switch (keycode) 
 		{
 
@@ -168,11 +174,14 @@ public class Level {
 			} 
 			else 
 			{
-				if (playerYMapCoord < camera.viewportHeight && maxYCoord<levelHeight) 
+				boolean arg2=maxYCoord<levelHeight;
+				if ( arg2) 
 				{
+					
 					camera.translate(0, 32);
+				//	playerYMapCoord += 32;
+					player.setY(player.getY() + 32);
 					maxYCoord+=32;
-					playerYMapCoord-=32;
 					System.out.println("UPnMAPUP");
 				}
 				else
@@ -195,18 +204,20 @@ public class Level {
 			} 
 			else 
 			{
-				boolean mapCoord=playerYMapCoord>0;
-				boolean heightbool=maxYCoord-SCREENHEIGHT>0;
+				boolean arg1=playerYMapCoord>0;
+				boolean arg2=maxYCoord-SCREENHEIGHT>0;
 				//playerYMapCoord < camera.viewportHeight && maxYCoord<levelHeight
-				if (mapCoord&&heightbool) 
+				if (arg1&&arg2) 
 				{
 					camera.translate(0, -32);
-					playerYMapCoord+=32;
+//					playerYMapCoord=32;
+					player.setY(player.getY() - 32);
 					maxYCoord-=32;
 					System.out.println("DOWNandMapDown");
 				}
 				else
 				{
+					System.out.println(arg1+" "+arg2);
 					if(player.getY()>0)
 					{
 						player.setY(player.getY()-32);
@@ -216,20 +227,7 @@ public class Level {
 				}
 			}
 			break;
-			
-		/*	if (playerYMapCoord > 0) {
-				player.setY(player.getY() - 32);
-				playerYMapCoord -= 32;
-			} else {
-				if (playerYMapCoord == 0) {
-				} else if (playerYMapCoord > 0) {
-					player.setY(player.getY() - 32);
-				} else {
-					camera.translate(0, -32);
-				}
-			}
-
-			break;*/
+	
 		case Input.Keys.A:
 			player.setX(player.getX() - 32);
 			break;
