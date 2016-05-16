@@ -43,9 +43,3 @@ Network Trash Folder
 Temporary Items
 .apdisk
 *.class
-*class
-bin/com/deluca/MyGdxGame$levelState.class
-*.class
-*.class
-*.class
-*.class

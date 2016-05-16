@@ -1,75 +1,49 @@
 package com.deluca.objects;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.math.Shape2D;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
-public class AnimatedObject
+public abstract class AnimatedObject extends Image
 {
-	int currentFrame=0;
+	int currentFrame;
 	int animationFrames;
 	int numFrames;
-	float x;
-	float y;
+
+	
+	boolean loopback=false;
 	boolean reverse=false;
-	String currentAtlasKey="";
-	Sprite sprite;
+	String currentAtlasKey;
     public TextureAtlas textureAtlas;
-	
-	public AnimatedObject(String file, int totalFrames, int animaSpeed)
+	protected static float animationSpeed;
+	int frames;
+	private Shape2D shape;
+	Animation animation;
+	float elapsedTime = 0;
+
+	public AnimatedObject(String file, float startX, float startY)
 	{
-		numFrames=totalFrames;
-		animationFrames = animaSpeed*numFrames;
-		textureAtlas = new TextureAtlas(Gdx.files.internal(file));
-        AtlasRegion region = textureAtlas.findRegion("0001");
-        sprite = new Sprite(region);
+        super( new TextureAtlas(Gdx.files.internal(file)).findRegion("0001"));
+        setX(startX);
+        setY(startY);  
+
 	}
 	
-	
-	
-	public void step() {
-    	if(!reverse)	                	
-    		currentFrame++;
-    	else
-    		currentFrame--;
-        if(currentFrame >  animationFrames + 1)
-        {	reverse=true;
-        	System.out.println("reverse");
-        }
-        	else if(currentFrame==0)
-        {
-        		System.out.println("forward");
-        	currentFrame=1;
-        	reverse=false;
-        }
-
-        currentAtlasKey = String.format("%04d", currentFrame/3+1);
-        
-        
-        sprite.setRegion(textureAtlas.findRegion(currentAtlasKey));
+	public Shape2D getShape()
+	{
+		return shape;
 	}
-
-
-
-	public void draw(Batch batch) {
-//TODO Take this out and put it in a orb file
-
-		{
-	        if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)){
-	            x=Gdx.input.getX();
-
-	        }
-	        if(Gdx.input.isButtonPressed(Input.Buttons.RIGHT)){
-	        	y=Gdx.graphics.getHeight()-Gdx.input.getY();
-
-	        }
-	    	sprite.setCenter(x, y);
-	    	sprite.setScale((float) 0.4);
-	        sprite.draw(batch);
-	    }
+	
+	protected void setShape(Shape2D theShape)
+	{
+		shape=theShape;
 	}
+	
+
+	public abstract void collide(Actor actor);
+
 }
