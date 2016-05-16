@@ -1,12 +1,14 @@
 package com.deluca.objects;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.deluca.util.FixedSizeQueue;
 import com.deluca.util.Utilities;
 
 public class ThrowingOrb extends AnimatedObject {
@@ -22,7 +24,12 @@ public class ThrowingOrb extends AnimatedObject {
     public static Sound ballSound = Gdx.audio.newSound(Gdx.files.internal("boing.ogg"));
     boolean grabbed=false;
 	
-	
+	private final int maxNumMouseDragSamples = 5;
+	FixedSizeQueue<Float> xLocationSamples = new FixedSizeQueue<Float>(maxNumMouseDragSamples);
+	FixedSizeQueue<Float> yLocationSamples = new FixedSizeQueue<Float>(maxNumMouseDragSamples);
+
+    
+    
 	public ThrowingOrb(float x, float y) {
 		super(filename, x, y);
 
@@ -54,27 +61,49 @@ public class ThrowingOrb extends AnimatedObject {
 	@Override
 	public void act(float delta) 
 	{
+		//Check Collision before next movement
+		float msX = Utilities.getMouseX();
+		float msY = Utilities.getMouseY();
+		Circle c = (Circle) getShape();
+				
+		//Move
+		if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+			// if not grabbed
+			if (!getGrabbed()) {
+				if (c.contains(msX, msY)) {
+					setGrabbed(true);
+				} else {
+					sendOrbTowardsCursor();
+				}
+			}
+			// if grabbed
+			else {
+				xLocationSamples.offer(msX);
+				yLocationSamples.offer(msY);
+			}
+		}
+		
+		
+		
+		
+		//
+		
 		if(grabbed)
-		{
-			float msX = Utilities.getMouseX();
-			float msY = Utilities.getMouseY();
-			Circle c= (Circle)getShape();
-
-			setX(msX-(getWidth()/2));
-			setY(msY-(getHeight()/2));
+		{			
 			setDeltaX(0);
 			setDeltaY(0);
 		}
 		
 		//if the ball is moving AND (if the new position is greater than the width of the screen)  OR (the position is less than or equal to zero)
-		if(deltaX!=0&&(getNewXLoc()+getWidth()>=Gdx.graphics.getWidth()||getNewXLoc()<=0))
+		if(deltaX!=0&&(getNewXLoc()+getWidth()>=Utilities.getWindowWidth()||getNewXLoc()<=0))
 		{
 			deltaX=-deltaX;
 			collide(null);
 			playsound();
 		}
 
-		if(deltaY!=0&&(getNewYLoc()+getWidth()>=Gdx.graphics.getHeight()||getNewYLoc()<=0))
+		//If moving vertically, AND (new position + circleWidth is greater than maxHeight, OR less than 0)
+		if(deltaY!=0 && (getNewYLoc()+getWidth() >= Utilities.getWindowHeight() || getNewYLoc()<=0))
 		{
 
 			deltaY=-deltaY;
@@ -99,12 +128,18 @@ public class ThrowingOrb extends AnimatedObject {
 	
 	public float getNewXLoc()
 	{
-		return getX()+deltaX;
+		if(grabbed)
+			return Utilities.getMouseX()-radius;
+		else
+			return getX()+deltaX;
 	}
 
 	public float getNewYLoc()
 	{
-		return getY()+deltaY;
+		if(grabbed)
+			return Utilities.getMouseY()-radius;
+		else
+			return getY()+deltaY;
 	}
 
 	
@@ -174,4 +209,76 @@ public class ThrowingOrb extends AnimatedObject {
 	}
 
 
+	//MOVEMENT METHODS
+	
+
+	private void sendOrbTowardsCursor() {
+		float msX = Gdx.input.getX();
+		float msY = Gdx.input.getY();
+		Circle c = (Circle) getShape();
+
+		xLocationSamples = new FixedSizeQueue<Float>(maxNumMouseDragSamples);
+		yLocationSamples = new FixedSizeQueue<Float>(maxNumMouseDragSamples);
+
+		// Average where ball is and where cursor is to get speed to send
+		// towards cursor
+		xLocationSamples.add(c.x);
+		xLocationSamples.add(msX);
+
+		yLocationSamples.add((Gdx.graphics.getHeight() - c.y));
+		yLocationSamples.add(msY);
+
+		float deltX = Utilities.getAverage(xLocationSamples);
+		setDeltaX(deltX);
+
+		float deltY = Utilities.getAverage(yLocationSamples);
+		setDeltaY(-deltY);
+	}
+
+	private void sendOrbTowardsPlayer(AnimatedObject player) {
+
+		float pX = player.getX();
+		float pY = Gdx.graphics.getHeight() - player.getY();
+		Circle c = (Circle) getShape();
+
+		xLocationSamples = new FixedSizeQueue<Float>(maxNumMouseDragSamples);
+		yLocationSamples = new FixedSizeQueue<Float>(maxNumMouseDragSamples);
+
+		// Average where ball is and where cursor is to get speed to send
+		// towards cursor
+		xLocationSamples.add(c.x);
+		xLocationSamples.add(pX);
+
+		yLocationSamples.add((Gdx.graphics.getHeight() - c.y));
+		yLocationSamples.add(pY);
+
+		float deltX = Utilities.getAverage(xLocationSamples);
+		setDeltaX(deltX);
+
+		float deltY = Utilities.getAverage(yLocationSamples);
+		setDeltaY(-deltY);
+	}
+
+	public void touchUp(int button) {
+		if (Input.Buttons.LEFT == button) {
+			if (getGrabbed()) {
+				if (xLocationSamples.size() > 0) {
+
+					float x = Utilities.getAverage(xLocationSamples);
+					setDeltaX(x);
+					float y = Utilities.getAverage(yLocationSamples);
+					setDeltaY(y);
+
+					xLocationSamples = new FixedSizeQueue<Float>(
+							maxNumMouseDragSamples);
+					yLocationSamples = new FixedSizeQueue<Float>(
+							maxNumMouseDragSamples);
+				}
+			}
+			setGrabbed(false);
+		}		
+	}
+	
+	
+	
 }

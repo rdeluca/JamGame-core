@@ -23,32 +23,21 @@ public class MyGdxGame extends ApplicationAdapter {
 		Texture texture = new Texture(Gdx.files.internal("map.png"));
 
 		// Create camera (this is what you're looking at within the viewport)
-		camera = new OrthographicCamera(texture.getWidth(), texture.getHeight());
-		//camera.zoom=.4f;
 
-		//	camera.translate(-Gdx.graphics.getWidth()/2, -Gdx.graphics.getHeight()/2);
-		
+		camera = new OrthographicCamera(texture.getWidth(), texture.getHeight());		
 		try {
 			director = new Director(batch, camera, this);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		// director=new Director( level);
-		// director.addEventListener(this);
-		// TODO:^^^^^^^^^^^^^^
-
 	}
 
 	@Override
 	public void dispose() {
 		batch.dispose();
-		try {
-			director.dispose();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		director.dispose();
+		
 	}
 
 	@Override

@@ -20,7 +20,7 @@
  </tileset>
  <layer name="baseLayer" width="20" height="20">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAACxNmYGCQAGIdINYCYkkisDwOcWEoZgJiNihmBmIWJD42bIRDHGYeK5o4Ow3NkwZiPTRsiEWMkUjz5KnsvlHzRs0jxTxFIFZCwiYMkPQsS6Z52LARDncPhHm6DJh51ZQC84zRwg+GTXGYx02Gf3FhkHkCVMRCDJCyHlRWS6GxpZDEiMUg9QAj4AGTQAYAAA==
+   H4sIAAAAAAAACxNmYGCQAGIdINYCYkkisDwOcWEoZgJiNihmBmIWJD42bIRDHGYeK5o4Ow3NkwZiPTRsiEWMkUjzZKjsPnkqmzfqvuHtPkUgVkLCJgyQ9CxLpnnYsBEOdw+EeboMmHnVlALzjNHCD4ZNcZjHTYZ/cWGQeQJUxEIMkLIeVFZLobGlkMSIxSD1AH5fUslABgAA
   </data>
  </layer>
  <layer name="overlayLayer" width="20" height="20">

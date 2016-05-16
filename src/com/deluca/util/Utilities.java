@@ -1,5 +1,7 @@
 package com.deluca.util;
 
+import java.util.LinkedList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -68,6 +70,20 @@ public class Utilities {
 		int cellY=(int) msy/cellHeight;
 		
 		return new Vector2(cellX,cellY);
+	}
+	
+	public static float getAverage(LinkedList<Float> queue) {
+		int numVals = queue.size();
+		float averageDistance = 0;
+		float first = queue.poll();
+		for (int i = 0; i < queue.size(); i++) 
+		{
+			float second = queue.poll();
+			averageDistance += second - first;
+			first = second;
+		}
+		averageDistance = averageDistance / numVals;
+		return averageDistance;
 	}
 
 }
